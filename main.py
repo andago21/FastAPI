@@ -33,3 +33,35 @@ class Recipe(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Willkommen bei der Rezeptplattform API!"}
+
+
+# DB VERBINDUNG TEST
+@app.get("/test-db")
+async def test_db():
+    collections = await db.list_collection_names()
+    return {"status": "Verbindung erfolgreich!", "collections": collections}
+
+
+
+
+
+# MongoDB Objekt lesbar machen
+def recipe_helper(recipe) -> dict:
+    recipe["id"] = str(recipe["_id"])  # MongoDB _id zu normalem string
+    del recipe["_id"]
+    return recipe
+
+# ── GET /api/ingredients
+@app.get("/api/ingredients")
+async def get_ingredients():
+    ingredients = []
+    async for ingredient in db.ingredients.find():
+        ingredients.append(recipe_helper(ingredient))
+    return {"ingredients": ingredients, "total": len(ingredients)}
+
+# ── POST /api/recipes
+@app.post("/api/recipes", status_code=201)
+async def create_recipe(recipe: Recipe):
+    result = await db.recipes.insert_one(recipe.dict())
+    new_recipe = await db.recipes.find_one({"_id": result.inserted_id})
+    return {"message": "Rezept erstellt!", "recipe": recipe_helper(new_recipe)}
