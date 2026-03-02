@@ -18,6 +18,18 @@ db = client[MONGO_DB]
 
 app = FastAPI(title="Rezeptplattform API")
 
+
+class Recipe(BaseModel):
+   name: str
+   description: str
+   origin: str
+   ingredients: list[str]
+   instructions: str
+   servings: Optional[int] = 4
+
+
+   
+
 @app.get("/")
 async def root():
     return {"message": "Willkommen bei der Rezeptplattform API!"}
