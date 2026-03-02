@@ -1,5 +1,6 @@
 Python Version: https://www.python.org/ftp/python/3.13.12/python-3.13.12-amd64.exe
 Packages: fastapi, fastapi[standard], (mongodb, motor, sqlalchemy, aiomysql - MongoDB)
+Installation: pip install fastapi, fastapi[standard], mongodb, motor, sqlalchemy, aiomysql
 
 --------------------------------------------------------------------------------------------
 
