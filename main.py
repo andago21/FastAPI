@@ -28,7 +28,7 @@ class Recipe(BaseModel):
    servings: Optional[int] = 4
 
 
-   
+
 
 @app.get("/")
 async def root():
@@ -50,6 +50,14 @@ def recipe_helper(recipe) -> dict:
     recipe["id"] = str(recipe["_id"])  # MongoDB _id zu normalem string
     del recipe["_id"]
     return recipe
+
+# ── GET /api/recipes
+@app.get("/api/recipes")
+async def get_recipes():
+    recipes = []
+    async for recipe in db.recipes.find():
+        recipes.append(recipe_helper(recipe))
+    return {"recipes": recipes, "total": len(recipes)}
 
 # ── GET /api/ingredients
 @app.get("/api/ingredients")
