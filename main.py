@@ -24,7 +24,6 @@ app = FastAPI(title="Rezeptplattform API")
 security = HTTPBasic()
 
 def check_auth(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_password = USERS.get(credentials.username)
     correct_user = secrets.compare_digest(credentials.username, USERNAME)
     correct_pass = secrets.compare_digest(credentials.password, PASSWORD)
     
@@ -89,7 +88,7 @@ async def get_ingredients():
 
 # ── POST /api/recipes
 @app.post("/api/recipes", status_code=201)
-async def create_recipe(recipe: Recipe, recipe: Recipe, username: str = Depends(check_auth)):
+async def create_recipe(recipe: Recipe, username: str = Depends(check_auth)):
     result = await db.recipes.insert_one(recipe.dict())
     new_recipe = await db.recipes.find_one({"_id": result.inserted_id})
     return {"message": "Rezept erstellt!", "recipe": recipe_helper(new_recipe)}
