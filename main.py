@@ -38,14 +38,17 @@ def check_auth(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 
-class Recipe(BaseModel):
-   name: str
-   description: str
-   origin: str
-   ingredients: list[str]
-   instructions: str
-   servings: Optional[int] = 4
+class Ingredient(BaseModel):
+    name: str
+    menge: str
 
+class Recipe(BaseModel):
+    name: str
+    description: str
+    origin: str
+    ingredients: list[Ingredient]
+    instructions: str
+    servings: Optional[int] = 4
 
 
 
@@ -89,6 +92,14 @@ async def get_ingredients():
 # ── POST /api/recipes
 @app.post("/api/recipes", status_code=201)
 async def create_recipe(recipe: Recipe, username: str = Depends(check_auth)):
+    # Rezept speichern
     result = await db.recipes.insert_one(recipe.dict())
     new_recipe = await db.recipes.find_one({"_id": result.inserted_id})
+
+    # Nur den Namen in ingredients Collection speichern
+    for ingredient in recipe.ingredients:
+        exists = await db.ingredients.find_one({"name": ingredient.name})
+        if not exists:
+            await db.ingredients.insert_one({"name": ingredient.name})
+
     return {"message": "Rezept erstellt!", "recipe": recipe_helper(new_recipe)}
