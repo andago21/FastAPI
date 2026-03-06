@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.middleware.cors import CORSMiddleware
 import secrets
 from pydantic import BaseModel
 from typing import Optional
@@ -20,14 +19,6 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[MONGO_DB]
 
 app = FastAPI(title="Rezeptplattform API")
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 security = HTTPBasic()
